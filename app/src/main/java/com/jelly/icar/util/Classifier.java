@@ -86,7 +86,7 @@ public class Classifier {
         JSONObject res = JSON.parseObject(OkHttpUtils.getInstance()
                 .doPostForm(Constants.BD_AI_URL, params));
         if (res.getString("error_msg") != null) {
-            Log.e("BD_ERROR", res.getString("error_msg"));
+            Log.w("Classifier", res.getString("error_msg"));
             return null;
         }
         JSONObject result = res.getJSONArray("result").getJSONObject(0);

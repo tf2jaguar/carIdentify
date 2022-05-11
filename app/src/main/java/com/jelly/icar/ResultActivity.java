@@ -37,7 +37,7 @@ public class ResultActivity extends AppCompatActivity {
 
         String path = getIntent().getStringExtra("picPath");
         if (path == null || "".equals(path.replaceAll(" ", ""))) {
-            Log.e("", "获取传递信息失败");
+            Log.e("ResultActivity", "path invalid!");
             return;
         }
 
@@ -52,23 +52,6 @@ public class ResultActivity extends AppCompatActivity {
         showVerifyPic(path);
     }
 
-    private Bitmap roteBitmap(String imgPath) {
-        Bitmap bitmap = null;
-        try {
-            FileInputStream fis = new FileInputStream(imgPath);
-            bitmap = BitmapFactory.decodeStream(fis);
-            // 设置一个矩阵，旋转九十度
-            Matrix matrix = new Matrix();
-            matrix.setRotate(90);
-            // 将原来的图片的bitmap旋转九十度
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                    bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return bitmap;
-    }
-
     /**
      * 交由 识别器 识别
      */
@@ -81,7 +64,8 @@ public class ResultActivity extends AppCompatActivity {
 
             if (bdMsg == null) {
                 Utils.refreshBToken();
-                Log.i(null, "refresh bd token.");
+                Log.i("ResultActivity", "refresh bd token and retry.");
+                bdMsg = classifier.predictByBD(imgPath);
             }
 
             msg = modelMsg + " " + bdMsg;
@@ -100,12 +84,42 @@ public class ResultActivity extends AppCompatActivity {
      * 显示图片
      */
     private void showVerifyPic(final String imgPath) {
-        // 方法一：最终显示图片为旋转90°的
-//        Bitmap bitmap = BitmapFactory.decodeFile(path);
-//        imageView.setImageBitmap(bitmap);
-
-        // 方法二：使用矩阵旋转90°
+        // 使用矩阵旋转90°
         Bitmap bitmap = roteBitmap(imgPath);
         imageView.setImageBitmap(bitmap);
     }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options,
+                                            int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            inSampleSize = Math.max(heightRatio, widthRatio);
+        }
+        return inSampleSize;
+    }
+
+    public Bitmap roteBitmap(Bitmap origin, int angle) {
+        // 旋转图片 动作
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        // 创建新的bitmap
+        return Bitmap.createBitmap(origin, 0, 0,
+                origin.getWidth(), origin.getHeight(), matrix, true);
+    }
+
+    public Bitmap roteBitmap(String imgPath) {
+        Bitmap bitmap;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        bitmap = BitmapFactory.decodeFile(imgPath, options);
+        options.inSampleSize = calculateInSampleSize(options, 1120, 1120);
+        options.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeFile(imgPath, options);
+        return roteBitmap(bitmap, 90);
+    }
+
 }

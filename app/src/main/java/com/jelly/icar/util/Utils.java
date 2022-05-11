@@ -59,7 +59,7 @@ public class Utils {
             }
             return file.getAbsolutePath();
         } catch (IOException e) {
-            Log.e("pytorchandroid", "Error process asset " + assetName + " to file path");
+            Log.e("Utils", "train error process asset " + assetName + " to file path");
         }
         return null;
     }
@@ -82,7 +82,7 @@ public class Utils {
         String bdAiClientSecret = property.getProperty("BD_AI_CLIENT_SECRET");
         String bdAiToken = property.getProperty("BD_AI_TOKEN");
 
-        if (isBlank(modelPath) || isBlank(bdAiClientId) || isBlank(bdAiClientSecret) || isBlank(bdAiToken)) {
+        if (isBlank(modelPath) || isBlank(bdAiClientId) || isBlank(bdAiClientSecret)) {
             throw new IllegalArgumentException("读取配置文件错误");
         }
         Constants.BD_AI_CLIENT_ID = bdAiClientId;

@@ -1,10 +1,11 @@
 package com.jelly.icar.util;
 
+import android.util.Log;
+
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -15,7 +16,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class OkHttpUtils {
-    final Logger log = Logger.getLogger("com.jelly.icar.util.OkHttpUtils");
 
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     private static final byte[] LOCKER = new byte[0];
@@ -75,7 +75,7 @@ public class OkHttpUtils {
 
     private Boolean isBlankUrl(String url) {
         if (url == null || "".equals(url)) {
-            log.warning("url is blank");
+            Log.w("OkHttpUtils", "url is blank");
             return true;
         } else {
             return false;
@@ -89,12 +89,12 @@ public class OkHttpUtils {
             Response response = call.execute();
             if (response.isSuccessful()) {
                 re = response.body().string();
-                log.info("request url:" + request.url().toString() + ";\nresponse:" + re);
-            } else {
-                log.info("request failure url:" + request.url().toString() + ";\nmessage:" + response.message());
             }
         } catch (Exception e) {
-            log.warning("request execute failure:" + e);
+            Log.w("OkHttpUtils", "request execute failure:" + e);
+        }
+        if (Log.isLoggable("OkHttpUtils", Log.DEBUG)) {
+            Log.d("OkHttpUtils", "request url:" + request.url().toString() + ";\nresponse:" + re);
         }
         return re;
     }
