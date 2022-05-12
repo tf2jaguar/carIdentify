@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Car Identify</string>
+    <string name="app_name">carIdentify</string>
     <string name="scan_btn">扫一扫</string>
     <string name="capture_result">扫一扫结果</string>
 
